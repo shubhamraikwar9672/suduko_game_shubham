@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+
+    <link
+      href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAACAcHAPVJqAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREREREREQAAEAABACARAiAQAAECIBEiIhAiIQIgEQAAECABACAREREREREREREAABAAAQAAEQIAECIBACARAiAQIgECIBECABAAAQIAERERERERERERAAAQAAEAIBEAAhAiAQAgEQAgECIBACIRAAIQIgEAIBEREREREREREAAAAAe9oAAEvSAAACEgAAetoAAAAAAAB73gAAWloAAEpSAABb1gAAAAAAAHvaAAByWgAAalgAAHJaAAAAAAAA"
+      rel="icon"
+      type="image/x-icon"
+    />
+    <script src="valdate.js"></script>
+    <title>Sudoku Game</title>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Sudoku Game</h1>
+      <p>lets test Our Skill</p>
+    </div>
+    <div id="container"></div>
+    <div class="footer"><p>by Shubham Raikwar</p></div>
+  </body>
+
+  <script defer>
+    var sudoku = [[], [], [], [], [], [], [], [], []];
+    function createGrid() {
+      var myContainer = document.getElementById("container");
+
+      for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+          var myInput = document.createElement("input");
+          myInput.type = "number";
+          myInput.pattern = "[0-9]";
+          myInput.id = `${i}${j}`;
+
+          var number = Math.ceil(Math.random() * 9);
+          myInput.row = i;
+          myInput.col = j;
+          if (isSafe(sudoku, i, j, number)) {
+            myInput.value = number;
+            myInput.readOnly = true;
+            myInput.disabled = true;
+            myInput.style.backgroundColor = "#FFE0B2";
+            myInput.style.color = "black";
+          } else {
+            number = undefined;
+            myInput.value = "";
+          }
+          sudoku[i][j] = number;
+
+          myContainer.appendChild(myInput);
+
+          myInput.min = "0";
+          myInput.max = "9";
+          myInput.oninput = function (e) {
+            checkAnswer(sudoku, e);
+          };
+        }
+      }
+    }
+    createGrid();
+    function isSafe(grid, row, col, num) {
+      for (let x = 0; x < 9; x++) {
+        if (grid[row][x] == num) {
+          return false;
+        }
+      }
+
+      for (let y = 0; y < 9; y++) {
+        if (grid[y][col] == num) {
+          return false;
+        }
+      }
+
+      var startRow = row - (row % 3);
+      var startCol = col - (col % 3);
+
+      for (let m = 0; m < 3; m++) {
+        for (let n = 0; n < 3; n++) {
+          if (grid[m + startRow][n + startCol] == num) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    function checkAnswer(grid, e) {
+      var row = e.target.row;
+      var col = e.target.col;
+      var num = Number(e.target.value);
+      var id = e.target.id;
+      let inpRef = document.getElementById(id);
+      var myInput = document.createElement("input");
+      if (inpRef.value < 0 || inpRef.value > 9) {
+        alert("Value Must be 0-9");
+        inpRef.value = "";
+      }
+      if (num == "") {
+        return false;
+      }
+      for (let x = 0; x < 9; x++) {
+        if (grid[row][x] == num) {
+          showColor("red", id);
+          return false;
+        }
+      }
+
+      for (let y = 0; y < 9; y++) {
+        if (grid[y][col] == num) {
+          showColor("red", id);
+          return false;
+        }
+      }
+      var startRow = row - (row % 3);
+      var startCol = col - (col % 3);
+
+      for (let m = 0; m < 3; m++) {
+        for (let n = 0; n < 3; n++) {
+          if (grid[m + startRow][n + startCol] == num) {
+            showColor("red", id);
+            return false;
+          }
+        }
+      }
+
+      showColor("green", id);
+      return true;
+     
+    }
+    function showColor(color, id) {
+      let inpRef = document.getElementById(id);
+      inpRef.style.backgroundColor = color;
+    }
+  </script>
+</html>
